@@ -1,0 +1,46 @@
+{
+  "id": "/prometheus/server",
+  "instances": 1,
+  "cpus": 0.5,
+  "mem": 2048,
+  "ports": [0],
+  "env": {
+    "NODE_EXPORTER_SRV": "_node-exporter.prometheus._tcp.marathon.mesos"
+  },
+  "container": {
+    "type": "DOCKER",
+    "volumes": [
+      {
+        "containerPath": "prometheus",
+        "persistent": {
+          "size": 1024
+        },
+        "mode": "RW"
+      }
+    ],
+    "docker": {
+      "image": "lloesche/prometheus-dcos",
+      "forcePullImage": true,
+      "network": "BRIDGE",
+      "portMappings": [
+        {
+            "containerPort": 9090,
+            "protocol": "tcp",
+            "labels": {
+              "VIP_0": "/prometheus/server:9090"
+            }
+        }
+      ]
+    }
+  },
+  "residency": {
+    "taskLostBehavior": "WAIT_FOREVER"
+  },
+  "healthChecks": [
+    {
+      "path": "/metrics",
+      "portIndex": 0,
+      "protocol": "HTTP"
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "id": "/prometheus/node-exporter",
+  "instances": 1,
+  "cpus": 0.01,
+  "mem": 256,
+  "ports": [0],
+  "uris": ["https://github.com/prometheus/node_exporter/releases/download/0.12.0/node_exporter-0.12.0.linux-amd64.tar.gz"],
+  "cmd": "node_exporter-0.12.0.linux-amd64/node_exporter -web.listen-address :$PORT",
+  "constraints": [
+    [
+      "hostname",
+      "UNIQUE"
+    ]
+  ],
+  "healthChecks": [
+    {
+      "path": "/metrics",
+      "portIndex": 0,
+      "protocol": "HTTP"
+    }
+  ]
+}

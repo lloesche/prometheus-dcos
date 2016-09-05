@@ -1,0 +1,19 @@
+global:
+  scrape_interval:     15s
+  evaluation_interval: 15s
+
+rule_files:
+  - prometheus.rules
+
+scrape_configs:
+  - job_name: node
+    file_sd_configs:
+    - files: ['/etc/prometheus/node_exporter.json']
+    relabel_configs:
+    - source_labels: ['__address__']
+      target_label: 'host'
+      regex: '(.*):.*'
+    - source_labels: ['__address__']
+      target_label: 'instance'
+      regex: '(.*):.*'
+      replacement: '${1}:9100'
