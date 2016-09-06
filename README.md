@@ -21,6 +21,7 @@ So after a [discussion on the mailing list](https://groups.google.com/forum/#!to
 |`SRV_REFRESH_INTERVAL` | How often should we update the targets JSON | `SRV_REFRESH_INTERVAL=60`|
 |`ALERT_MANAGER_URI` | AlertManager URL | `ALERT_MANAGER_URI=http://prometheusalertmanager.marathon.l4lb.thisdcos.directory:9093`|
 |`PAGERDUTY_KEY` | Pagerduty API Key for Alertmanager | `PAGERDUTY_KEY=93dsqkj23gfTD_nFbdwqk` |
+|`EXTERNAL_URI` | External WebUI URL | `EXTERNAL_URI=http://prometheusserver.marathon.l4lb.thisdcos.directory:9090`|
 
 ## Building the SRV lookup helper
 To run the srv-lookup helper tool inside the minimal prom/prometheus Docker container I statically linked it. To do so yourself install [musl libc](http://www.musl-libc.org/) and compile using:
