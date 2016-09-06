@@ -7,7 +7,7 @@ ALERT InstanceDown
     description = "{{ $labels.host }} of job {{ $labels.job }} has been down for more than 5 minutes.",
   }
 ALERT InstanceLowDisk
-  IF (node_filesystem_avail{device=~"/.*", mountpoint!~"/var/lib/mesos/slave/.*"} / node_filesystem_size * 100) < 10
+  IF 100 - (node_filesystem_avail{device=~"/.*", mountpoint!~"/var/lib/mesos/slave/.*"} / node_filesystem_size * 100) > 90
   FOR 5m
   LABELS { severity = "page" }
   ANNOTATIONS {
