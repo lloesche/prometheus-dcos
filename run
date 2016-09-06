@@ -3,11 +3,14 @@ STORAGE_LOCAL_PATH=/prometheus
 if [ -d /mnt/mesos/sandbox/prometheus ]; then
   STORAGE_LOCAL_PATH=/mnt/mesos/sandbox/prometheus
 fi
+mkdir -p $STORAGE_LOCAL_PATH/server $STORAGE_LOCAL_PATH/alertmanager
+/bin/sed -e "s/@PAGERDUTY_KEY@/$PAGERDUTY_KEY/" /etc/prometheus/alertmanager.yml.tmpl > /etc/prometheus/alertmanager.yml
 /bin/srv2file_sd -srv "$NODE_EXPORTER_SRV" -out "/etc/prometheus/node_exporter.json" -loop -time ${SRV_REFRESH_INTERVAL:-60} &
+/bin/alertmanager -config.file "/etc/prometheus/alertmanager.yml" -storage.path "$STORAGE_LOCAL_PATH/alertmanager" &
 /bin/prometheus \
   -config.file=/etc/prometheus/prometheus.yml \
-  -storage.local.path=$STORAGE_LOCAL_PATH \
+  -storage.local.path=$STORAGE_LOCAL_PATH/server \
   -web.console.libraries=/etc/prometheus/console_libraries \
   -web.console.templates=/etc/prometheus/consoles \
-  -alertmanager.url=${ALERT_MANAGER_URI:-http://prometheusalertmanager.marathon.l4lb.thisdcos.directory:9093} \
+  -alertmanager.url=${ALERT_MANAGER_URI:-http://localhost:9093} \
   "$@"

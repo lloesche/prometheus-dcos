@@ -5,7 +5,8 @@
   "mem": 2048,
   "ports": [0],
   "env": {
-    "NODE_EXPORTER_SRV": "_node-exporter.prometheus._tcp.marathon.mesos"
+    "NODE_EXPORTER_SRV": "_node-exporter.prometheus._tcp.marathon.mesos",
+    "PAGERDUTY_KEY": ""
   },
   "container": {
     "type": "DOCKER",
@@ -28,6 +29,13 @@
             "protocol": "tcp",
             "labels": {
               "VIP_0": "/prometheus/server:9090"
+            }
+        },
+        {
+            "containerPort": 9093,
+            "protocol": "tcp",
+            "labels": {
+              "VIP_0": "/prometheus/alertmanager:9093"
             }
         }
       ]
