@@ -3,7 +3,7 @@ STORAGE_LOCAL_PATH=/prometheus
 if [ -d /mnt/mesos/sandbox/prometheus ]; then
   STORAGE_LOCAL_PATH=/mnt/mesos/sandbox/prometheus
 fi
-/bin/srv-lookup -srv "$NODE_EXPORTER_SRV" -out "/etc/prometheus/node_exporter.json" -loop -time ${SRV_REFRESH_INTERVAL:-60} &
+/bin/srv2file_sd -srv "$NODE_EXPORTER_SRV" -out "/etc/prometheus/node_exporter.json" -loop -time ${SRV_REFRESH_INTERVAL:-60} &
 /bin/prometheus \
   -config.file=/etc/prometheus/prometheus.yml \
   -storage.local.path=$STORAGE_LOCAL_PATH \
