@@ -42,7 +42,8 @@ func generate(hostname string, outfile string) {
 
 	_, addrs, err := net.LookupSRV("", "", hostname)
 	if err != nil {
-		log.Fatal(fmt.Sprintf("Error: %s", err))
+		log.Println(fmt.Sprintf("Error: %s", err))
+		return
 	} else {
 		for i := 0; i < len(addrs); i++ {
 			srvaddrs, err := net.LookupHost(addrs[i].Target)
@@ -62,21 +63,26 @@ func generate(hostname string, outfile string) {
 
 	file, err := ioutil.TempFile("", "file-sd")
 	if err != nil {
-		log.Fatalln(err)
+		log.Println(err)
+		return
 	}
 	if _, err = file.Write([]byte(file_sd_str)); err != nil {
-		log.Fatalln(err)
+		log.Println(err)
+		return
 	}
 
 	if err = file.Close(); err != nil {
-		log.Fatalln(err)
+		log.Println(err)
+		return
 	}
 
 	if err = os.Chmod(file.Name(), 0644); err != nil {
-		log.Fatalln(err)
+		log.Println(err)
+		return
 	}
 
 	if err = os.Rename(file.Name(), outfile); err != nil {
-		log.Fatalln(err)
+		log.Println(err)
+		return
 	}
 }
