@@ -3,6 +3,14 @@
 ## Intro
 This runs Prometheus on DC/OS. `server.json` contains the service definition for Prometheus itself. `node_exporter.json` contains the service definition for node_exporter. I'm running node_exporter inside a Mesos (cgroups) container so that it sees all of the hosts filesystems without any need for priviliges or translation.
 
+## Usage
+Install using
+```
+$ dcos marathon app add node_exporter.json
+$ dcos marathon app update /prometheus/node-exporter instances=7000 # however many agents you have in your cluster
+$ dcos marathon app add server.json
+```
+
 ## Why file_sd based discovery?
 Prometheus supports DNS based service discovery. Given a Mesos-DNS SRV record like `_node-exporter.prometheus._tcp.marathon.mesos` it will find the list of node_exporter nodes and poll them. However it'll result in instance names like
 ```
