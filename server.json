@@ -37,13 +37,6 @@
             "labels": {
               "VIP_0": "/prometheus/server:9093"
             }
-        },
-        {
-            "containerPort": 3000,
-            "protocol": "tcp",
-            "labels": {
-              "VIP_0": "/prometheus/server:3000"
-            }
         }
       ]
     }
