@@ -10,7 +10,7 @@ ADD https://github.com/Yelp/dumb-init/releases/download/v1.1.3/dumb-init_1.1.3_a
 ADD https://github.com/lloesche/prometheus-dcos/releases/download/0.1/srv2file_sd /bin/srv2file_sd
 ADD https://github.com/prometheus/alertmanager/releases/download/v0.4.2/alertmanager-0.4.2.linux-amd64.tar.gz /tmp/alertmanager.tar.gz
 RUN mkdir -p /tmp/alertmanager && \
-    tar -xzf alertmanager-0.4.2.linux-amd64.tar.gz -C /tmp/alertmanager/ --strip-components=1 && \
+    tar -xzf /tmp/alertmanager.tar.gz -C /tmp/alertmanager/ --strip-components=1 && \
     mv /tmp/alertmanager/alertmanager /bin/ && \
     rm -rf /tmp/alertmanager /tmp/alertmanager.tar.gz
     chmod +x /run /bin/dumb-init /bin/srv2file_sd /bin/alertmanager
