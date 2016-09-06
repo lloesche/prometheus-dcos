@@ -12,7 +12,7 @@ ADD https://github.com/prometheus/alertmanager/releases/download/v0.4.2/alertman
 RUN mkdir -p /tmp/alertmanager && \
     tar -xzf /tmp/alertmanager.tar.gz -C /tmp/alertmanager/ --strip-components=1 && \
     mv /tmp/alertmanager/alertmanager /bin/ && \
-    rm -rf /tmp/alertmanager /tmp/alertmanager.tar.gz
+    rm -rf /tmp/alertmanager /tmp/alertmanager.tar.gz && \
     chmod +x /run /bin/dumb-init /bin/srv2file_sd /bin/alertmanager
 
 ENTRYPOINT [ "/bin/dumb-init", "--" ]
