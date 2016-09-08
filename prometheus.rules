@@ -15,8 +15,8 @@ ALERT InstanceLowDisk
     description = "{{$labels.host}} has less than 10% free disk space",
   }
 ALERT InstanceHighCpu
-  IF 100 - (avg by (instance) (irate(node_cpu{job="node",mode="idle"}[5m])) * 100) > 90
-  FOR 10m
+  IF 100 - (avg by (instance) (irate(node_cpu{job="node",mode="idle"}[5m])) * 100) > 99
+  FOR 60m
   LABELS { severity = "page" }
   ANNOTATIONS {
     summary = "Instance {{$labels.host}}: CPU high",
