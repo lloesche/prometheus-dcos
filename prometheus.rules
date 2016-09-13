@@ -16,7 +16,7 @@ ALERT InstanceLowDisk
   }
 ALERT InstanceHighCpu
   IF 100 - (avg by (instance) (irate(node_cpu{job="node",mode="idle"}[5m])) * 100) > 99
-  FOR 60m
+  FOR 360m
   LABELS { severity = "page" }
   ANNOTATIONS {
     summary = "Instance {{$labels.host}}: CPU high",
