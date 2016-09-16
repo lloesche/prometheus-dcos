@@ -7,10 +7,10 @@ rule_files:
 
 scrape_configs:
   - job_name: prometheus
-    target_groups:
+    static_configs:
     - targets: ['localhost:9090']
   - job_name: alertmanager
-    target_groups:
+    static_configs:
     - targets: ['localhost:9093']
   - job_name: node
     file_sd_configs:
