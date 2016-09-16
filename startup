@@ -14,17 +14,7 @@ mkdir -p $STORAGE_LOCAL_PATH/server $STORAGE_LOCAL_PATH/alertmanager
     /etc/prometheus/alertmanager.yml.tmpl > /etc/prometheus/alertmanager.yml
 
 /bin/srv2file_sd -srv "$NODE_EXPORTER_SRV" -out "/etc/prometheus/node_exporter.json" -loop -time ${SRV_REFRESH_INTERVAL:-60} &
-(
-  run=true
-  while $run
-  do
-    /bin/alertmanager -config.file "/etc/prometheus/alertmanager.yml" -storage.path "$STORAGE_LOCAL_PATH/alertmanager" &
-    trap "run=false; kill -TERM $!; wait $!" SIGTERM
-    sleep 1
-    wait
-  done
-) &
-trap "kill -TERM $!; wait $!" SIGTERM SIGINT EXIT
+/bin/alertmanager -config.file "/etc/prometheus/alertmanager.yml" -storage.path "$STORAGE_LOCAL_PATH/alertmanager" &
 /bin/prometheus \
   -config.file /etc/prometheus/prometheus.yml \
   -storage.local.path $STORAGE_LOCAL_PATH/server \
