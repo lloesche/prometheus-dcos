@@ -12,10 +12,10 @@ route:
  receiver: email
  routes:
   - match:
-    severity: page-high
+      severity: page-high
     receiver: pagerduty-high-priority
   - match:
-    severity: page-low
+      severity: page-low
     receiver: pagerduty-low-priority
 
 receivers:
