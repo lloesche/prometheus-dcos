@@ -1,6 +1,5 @@
 FROM prom/prometheus
 MAINTAINER Lukas Loesche <lloesche@fedoraproject.org>
-EXPOSE 3000
 EXPOSE 9093
 EXPOSE 9090
 ADD prometheus.yml /etc/prometheus/
