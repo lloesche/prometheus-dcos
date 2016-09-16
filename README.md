@@ -31,7 +31,6 @@ So after a [discussion on the mailing list](https://groups.google.com/forum/#!to
 |`PAGERDUTY_HIGH_PRIORITY_KEY` | Pagerduty High Priority API Key for Alertmanager | `PAGERDUTY_HIGH_PRIORITY_KEY=93dsqkj23gfTD_nFbdwqk` |
 |`PAGERDUTY_LOW_PRIORITY_KEY` | Pagerduty Low Priority API Key for Alertmanager | `PAGERDUTY_LOW_PRIORITY_KEY=23d3NI3ff23f23bffojgf` |
 |`EXTERNAL_URI` | External WebUI URL | `EXTERNAL_URI=http://prometheusserver.marathon.l4lb.thisdcos.directory:9090`|
-|`ALERTMANAGER_EXTERNAL_URI` | Alertmanager External WebUI URL | `ALERTMANAGER_EXTERNAL_URI=http://prometheusserver.marathon.l4lb.thisdcos.directory:9093`|
 |`SMTP_FROM` | How often should we update the targets JSON | `SMTP_FROM=alertmanager@example.com`|
 |`SMTP_TO` | How often should we update the targets JSON | `SMTP_TO=ops@example.com`|
 |`SMTP_SMARTHOST` | How often should we update the targets JSON | `SMTP_SMARTHOST=mail.example.com`|

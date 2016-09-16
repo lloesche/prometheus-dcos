@@ -15,8 +15,7 @@ mkdir -p $STORAGE_LOCAL_PATH/server $STORAGE_LOCAL_PATH/alertmanager
 
 /bin/srv2file_sd -srv "$NODE_EXPORTER_SRV" -out "/etc/prometheus/node_exporter.json" -loop -time ${SRV_REFRESH_INTERVAL:-60} &
 /bin/alertmanager -config.file "/etc/prometheus/alertmanager.yml" \
-                  -storage.path "$STORAGE_LOCAL_PATH/alertmanager" \
-                  -web.external-url "${ALERTMANAGER_EXTERNAL_URI:-http://prometheusserver.marathon.l4lb.thisdcos.directory:9093}" &
+                  -storage.path "$STORAGE_LOCAL_PATH/alertmanager" &
 /bin/prometheus \
   -config.file /etc/prometheus/prometheus.yml \
   -storage.local.path $STORAGE_LOCAL_PATH/server \
