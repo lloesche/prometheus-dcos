@@ -28,8 +28,15 @@ So after a [discussion on the mailing list](https://groups.google.com/forum/#!to
 |`NODE_EXPORTER_SRV` | Mesos-DNS SRV record of the node_exporter | `NODE_EXPORTER_SRV=_node-exporter.prometheus._tcp.marathon.mesos`|
 |`SRV_REFRESH_INTERVAL` | How often should we update the targets JSON | `SRV_REFRESH_INTERVAL=60`|
 |`ALERT_MANAGER_URI` | AlertManager URL | `ALERT_MANAGER_URI=http://prometheusalertmanager.marathon.l4lb.thisdcos.directory:9093`|
-|`PAGERDUTY_KEY` | Pagerduty API Key for Alertmanager | `PAGERDUTY_KEY=93dsqkj23gfTD_nFbdwqk` |
+|`PAGERDUTY_HIGH_PRIORITY_KEY` | Pagerduty High Priority API Key for Alertmanager | `PAGERDUTY_HIGH_PRIORITY_KEY=93dsqkj23gfTD_nFbdwqk` |
+|`PAGERDUTY_LOW_PRIORITY_KEY` | Pagerduty Low Priority API Key for Alertmanager | `PAGERDUTY_LOW_PRIORITY_KEY=23d3NI3ff23f23bffojgf` |
 |`EXTERNAL_URI` | External WebUI URL | `EXTERNAL_URI=http://prometheusserver.marathon.l4lb.thisdcos.directory:9090`|
+|`ALERTMANAGER_EXTERNAL_URI` | Alertmanager External WebUI URL | `ALERTMANAGER_EXTERNAL_URI=http://prometheusserver.marathon.l4lb.thisdcos.directory:9093`|
+|`SMTP_FROM` | How often should we update the targets JSON | `SMTP_FROM=alertmanager@example.com`|
+|`SMTP_TO` | How often should we update the targets JSON | `SMTP_TO=ops@example.com`|
+|`SMTP_SMARTHOST` | How often should we update the targets JSON | `SMTP_SMARTHOST=mail.example.com`|
+|`SMTP_LOGIN` | How often should we update the targets JSON | `SMTP_LOGIN=prometheus`|
+|`SMTP_PASSWORD` | How often should we update the targets JSON | `SMTP_PASSWORD=23iuhf23few`|
 
 ## Building the SRV lookup helper
 To run the srv-lookup helper tool inside the minimal prom/prometheus Docker container I statically linked it. To do so yourself install [musl libc](http://www.musl-libc.org/) and compile using:
