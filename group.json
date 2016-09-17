@@ -66,7 +66,7 @@
     },
     {
       "id": "/prometheus/node-exporter",
-      "instances": 1,
+      "instances": 100000,
       "cpus": 0.01,
       "mem": 256,
       "ports": [
