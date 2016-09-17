@@ -129,7 +129,7 @@
         "PASSWORD": "{PLAIN}changeme",
         "SERVER_NAME": "_",
         "LOCATION": "/",
-        "PROXY_PASS": "http://10.177.90.1:9090/"
+        "PROXY_PASS": "http://prometheus.l4lb.thisdcos.directory:9090/"
       }
     },
     {
