@@ -1,0 +1,188 @@
+{
+  "id": "/prometheus",
+  "groups": [
+    {
+      "id": "/prometheus/server",
+      "instances": 1,
+      "cpus": 0.5,
+      "mem": 2048,
+      "ports": [
+        0
+      ],
+      "env": {
+        "EXTERNAL_URI": "https://monitoring.example.com/",
+        "NODE_EXPORTER_SRV": "_node-exporter.prometheus._tcp.marathon.mesos",
+        "PAGERDUTY_HIGH_PRIORITY_KEY": "d230f2398hf293h2304f304j343f0j34",
+        "PAGERDUTY_LOW_PRIORITY_KEY": "d2302n3f4f4h39230f239f03g30jf24f",
+        "SMTP_FROM": "noreply@example.com",
+        "SMTP_TO": "ops@example.com",
+        "SMTP_SMARTHOST": "smtp.example.com",
+        "SMTP_LOGIN": "someuser",
+        "SMTP_PASSWORD": "somepassword"
+      },
+      "container": {
+        "type": "DOCKER",
+        "volumes": [
+          {
+            "containerPath": "prometheus",
+            "persistent": {
+              "size": 4096
+            },
+            "mode": "RW"
+          }
+        ],
+        "docker": {
+          "image": "lloesche/prometheus-dcos",
+          "forcePullImage": true,
+          "network": "BRIDGE",
+          "portMappings": [
+            {
+              "containerPort": 9090,
+              "protocol": "tcp",
+              "labels": {
+                "VIP_0": "prometheus:9090"
+              }
+            },
+            {
+              "containerPort": 9093,
+              "protocol": "tcp",
+              "labels": {
+                "VIP_0": "prometheus:9093"
+              }
+            }
+          ]
+        }
+      },
+      "residency": {
+        "taskLostBehavior": "WAIT_FOREVER"
+      },
+      "healthChecks": [
+        {
+          "path": "/metrics",
+          "portIndex": 0,
+          "protocol": "HTTP"
+        }
+      ]
+    },
+    {
+      "id": "/prometheus/node-exporter",
+      "instances": 1,
+      "cpus": 0.01,
+      "mem": 256,
+      "ports": [
+        0
+      ],
+      "uris": [
+        "https://github.com/prometheus/node_exporter/releases/download/0.12.0/node_exporter-0.12.0.linux-amd64.tar.gz"
+      ],
+      "cmd": "node_exporter-0.12.0.linux-amd64/node_exporter -web.listen-address :$PORT",
+      "constraints": [
+        [
+          "hostname",
+          "UNIQUE"
+        ]
+      ],
+      "healthChecks": [
+        {
+          "path": "/metrics",
+          "portIndex": 0,
+          "protocol": "HTTP"
+        }
+      ]
+    },
+    {
+      "id": "/prometheus/auth-proxy",
+      "cpus": 0.01,
+      "mem": 256,
+      "disk": 0,
+      "instances": 1,
+      "container": {
+        "type": "DOCKER",
+        "volumes": [],
+        "docker": {
+          "image": "lloesche/auth-proxy-dcos",
+          "network": "BRIDGE",
+          "portMappings": [
+            {
+              "containerPort": 80,
+              "hostPort": 0,
+              "protocol": "tcp"
+            }
+          ],
+          "privileged": false,
+          "forcePullImage": true
+        }
+      },
+      "healthChecks": [
+        {
+          "path": "/auth-proxy-health-check",
+          "protocol": "HTTP",
+          "portIndex": 0
+        }
+      ],
+      "labels": {
+        "HAPROXY_0_VHOST": "monitoring.example.com",
+        "HAPROXY_GROUP": "external"
+      },
+      "env": {
+        "USER": "monitoring",
+        "PASSWORD": "{PLAIN}changeme",
+        "SERVER_NAME": "_",
+        "LOCATION": "/",
+        "PROXY_PASS": "http://10.177.90.1:9090/"
+      }
+    },
+    {
+      "id": "/prometheus/grafana",
+      "instances": 1,
+      "cpus": 0.5,
+      "mem": 1024,
+      "ports": [
+        0
+      ],
+      "env": {
+        "GF_PATHS_DATA": "/mnt/mesos/sandbox/grafana",
+        "GF_SERVER_ROOT_URL": "http://grafana.example.com",
+        "GF_SECURITY_ADMIN_USER": "someadmin",
+        "GF_SECURITY_ADMIN_PASSWORD": "somepassword",
+        "PROMETHEUS_URI": "http://prometheus.l4lb.thisdcos.directory:9090/"
+      },
+      "container": {
+        "type": "DOCKER",
+        "volumes": [
+          {
+            "containerPath": "grafana",
+            "persistent": {
+              "size": 4096
+            },
+            "mode": "RW"
+          }
+        ],
+        "docker": {
+          "image": "lloesche/prometheus-grafana-dcos",
+          "forcePullImage": true,
+          "network": "BRIDGE",
+          "portMappings": [
+            {
+              "containerPort": 3000,
+              "protocol": "tcp",
+              "labels": {
+                "VIP_0": "prometheus:3000"
+              }
+            }
+          ]
+        }
+      },
+      "residency": {
+        "taskLostBehavior": "WAIT_FOREVER"
+      },
+      "healthChecks": [
+        {
+          "path": "/",
+          "portIndex": 0,
+          "protocol": "HTTP"
+        }
+      ]
+    }
+  ]
+}
