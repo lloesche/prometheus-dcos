@@ -1,7 +1,7 @@
 # [Prometheus](https://prometheus.io/) on [Mesosphere DC/OS](https://dcos.io/)
 
 ## Intro
-This runs Prometheus on DC/OS. `server.json` contains the service definition for Prometheus itself. `node_exporter.json` contains the service definition for node_exporter. I'm running node_exporter inside a Mesos (cgroups) container so that it sees all of the hosts filesystems without any need for priviliges or translation.
+This runs Prometheus on DC/OS (1.8+). `server.json` contains the service definition for Prometheus itself. `node_exporter.json` contains the service definition for node_exporter. I'm running node_exporter inside a Mesos (cgroups) container so that it sees all of the hosts filesystems without any need for priviliges or translation.
 
 ## Usage
 Install using
