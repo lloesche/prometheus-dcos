@@ -1,4 +1,6 @@
 #!/bin/sh
+set -o nounset
+
 STORAGE_LOCAL_PATH=/prometheus
 [ -d /mnt/mesos/sandbox/prometheus ] && STORAGE_LOCAL_PATH=/mnt/mesos/sandbox/prometheus
 mkdir -p $STORAGE_LOCAL_PATH/server $STORAGE_LOCAL_PATH/alertmanager
