@@ -1,6 +1,6 @@
 {
   "id": "/prometheus",
-  "groups": [
+  "apps": [
     {
       "id": "/prometheus/server",
       "instances": 1,
