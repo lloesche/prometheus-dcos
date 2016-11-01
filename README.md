@@ -6,9 +6,8 @@ This runs Prometheus on DC/OS (1.8+). `server.json` contains the service definit
 ## Usage
 Install using
 ```
-$ dcos marathon app add node_exporter.json
+$ dcos marathon group add https://raw.githubusercontent.com/lloesche/prometheus-dcos/master/group.json
 $ dcos marathon app update /prometheus/node-exporter instances=7000 # however many agents you have in your cluster
-$ dcos marathon app add server.json
 ```
 
 ## Why file_sd based discovery?

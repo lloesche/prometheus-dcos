@@ -40,14 +40,14 @@
               "containerPort": 9090,
               "protocol": "tcp",
               "labels": {
-                "VIP_0": "prometheus:9090"
+                "VIP_0": "/prometheus/server:9090"
               }
             },
             {
               "containerPort": 9093,
               "protocol": "tcp",
               "labels": {
-                "VIP_0": "prometheus:9093"
+                "VIP_0": "/prometheus/server:9093"
               }
             }
           ]
@@ -66,7 +66,7 @@
     },
     {
       "id": "/prometheus/node-exporter",
-      "instances": 100000,
+      "instances": 1,
       "cpus": 0.01,
       "mem": 256,
       "ports": [
@@ -129,7 +129,7 @@
         "PASSWORD": "{PLAIN}changeme",
         "SERVER_NAME": "_",
         "LOCATION": "/",
-        "PROXY_PASS": "http://prometheus.l4lb.thisdcos.directory:9090/"
+        "PROXY_PASS": "http://prometheusserver.marathon.l4lb.thisdcos.directory:9090/"
       }
     },
     {
@@ -145,7 +145,7 @@
         "GF_SERVER_ROOT_URL": "http://grafana.example.com",
         "GF_SECURITY_ADMIN_USER": "someadmin",
         "GF_SECURITY_ADMIN_PASSWORD": "somepassword",
-        "PROMETHEUS_URI": "http://prometheus.l4lb.thisdcos.directory:9090/"
+        "PROMETHEUS_URI": "http://prometheusserver.marathon.l4lb.thisdcos.directory:9090/"
       },
       "container": {
         "type": "DOCKER",
@@ -165,10 +165,7 @@
           "portMappings": [
             {
               "containerPort": 3000,
-              "protocol": "tcp",
-              "labels": {
-                "VIP_0": "prometheus:3000"
-              }
+              "protocol": "tcp"
             }
           ]
         }
