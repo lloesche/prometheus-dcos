@@ -17,6 +17,7 @@ $ dcos marathon app update /prometheus/node-exporter instances=7000 # however ma
 *Important:* Once the apps are deployed make sure to update all Environment Variables with something useful. Alternatively download group.json and modify them directly before deploying to DC/OS.
 
 When working with the `group.json` you'll want to adjust the following variables and labels:
+
 | App | Variable | Value |
 |----------|----------|-------|
 |`/prometheus/server` | `EXTERNAL_URI` | The complete URL your Prometheus Server will be reachable under (http(s)://...)|
