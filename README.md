@@ -3,6 +3,10 @@
 ## Intro
 This runs Prometheus on DC/OS (1.8+). `server.json` contains the service definition for Prometheus itself. `node_exporter.json` contains the service definition for node_exporter. I'm running node_exporter inside a Mesos (cgroups) container so that it sees all of the hosts filesystems without any need for priviliges or translation.
 
+To make life easier I also created a `group.json` that includes the Prometheus Server, Node Exporter, [Grafana Dashboard](https://github.com/lloesche/prometheus-grafana-dcos) and an [authentication proxy](https://github.com/lloesche/auth-proxy-dcos) which will add Basic Auth to the Server's WebUI. The group assumes you're running [Marathon-LB](https://github.com/mesosphere/marathon-lb) on your DC/OS and exports Marathon-LB labels.
+
+To get started just install the group as shown below.
+
 ## Usage
 Install using
 ```
@@ -11,6 +15,25 @@ $ dcos marathon app update /prometheus/node-exporter instances=7000 # however ma
 ```
 
 *Important:* Once the apps are deployed make sure to update all Environment Variables with something useful. Alternatively download group.json and modify them directly before deploying to DC/OS.
+
+When working with the `group.json` you'll want to adjust the following variables and labels:
+| App | Variable | Value |
+|----------|----------|-------|
+|`/prometheus/server` | `EXTERNAL_URI` | The complete URL your Prometheus Server will be reachable under (http(s)://...)|
+|`/prometheus/server` | `PAGERDUTY_HIGH_PRIORITY_KEY` | A PagerDuty API Key for High Priority Alerts|
+|`/prometheus/server` | `PAGERDUTY_LOW_PRIORITY_KEY` | A PagerDuty API Key for Low Priority Alerts|
+|`/prometheus/server` | `SMTP_FROM` | Sender Address Alert Emails are send from|
+|`/prometheus/server` | `SMTP_TO` | Recipient Address Alert Emails get send to|
+|`/prometheus/server` | `SMTP_SMARTHOST` | SMTP Server Alert Emails are send via|
+|`/prometheus/server` | `SMTP_LOGIN` | SMTP Server Login|
+|`/prometheus/server` | `SMTP_PASSWORD` | SMTP Server Password|
+|`/prometheus/auth-proxy` | `LOGIN` | Login Users have to provide when accessing Prometheus Server|
+|`/prometheus/auth-proxy` | `PASSWORD` | Password Users have to provide when accessing Prometheus Server ([following this scheme](http://nginx.org/en/docs/http/ngx_http_auth_basic_module.html#auth_basic_user_file))|
+
+| App | Label | Value |
+|----------|----------|-------|
+|`/prometheus/auth-proxy` | `HAPROXY_0_VHOST` | Hostname Prometheus Server should be reachable under. This is what's contained in `EXTERNAL_URI`|
+|`/prometheus/grafana` | `HAPROXY_0_VHOST` | Hostname Grafana should be reachable under|
 
 ## Connections
 ![Connections](https://raw.githubusercontent.com/lloesche/prometheus-dcos/master/misc/prometheus-dcos.png "Connections")
