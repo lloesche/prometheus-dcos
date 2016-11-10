@@ -72,8 +72,10 @@
       "ports": [
         0
       ],
-      "uris": [
-        "https://github.com/prometheus/node_exporter/releases/download/0.12.0/node_exporter-0.12.0.linux-amd64.tar.gz"
+      "fetch": [
+        {
+          "uri": "https://github.com/prometheus/node_exporter/releases/download/0.12.0/node_exporter-0.12.0.linux-amd64.tar.gz"
+        }
       ],
       "cmd": "node_exporter-0.12.0.linux-amd64/node_exporter -web.listen-address :$PORT",
       "constraints": [
@@ -121,13 +123,12 @@
         }
       ],
       "labels": {
-        "HAPROXY_0_VHOST": "monitoring.example.com",
+        "HAPROXY_0_VHOST": "mon.example.com",
         "HAPROXY_GROUP": "external"
       },
       "env": {
-        "USER": "monitoring",
+        "LOGIN": "monitoring",
         "PASSWORD": "{PLAIN}changeme",
-        "SERVER_NAME": "_",
         "LOCATION": "/",
         "PROXY_PASS": "http://prometheusserver.marathon.l4lb.thisdcos.directory:9090/"
       }
@@ -142,10 +143,14 @@
       ],
       "env": {
         "GF_PATHS_DATA": "/mnt/mesos/sandbox/grafana",
-        "GF_SERVER_ROOT_URL": "http://grafana.example.com",
+        "GF_SERVER_ROOT_URL": "https://mondash.example.com",
         "GF_SECURITY_ADMIN_USER": "someadmin",
         "GF_SECURITY_ADMIN_PASSWORD": "somepassword",
         "PROMETHEUS_URI": "http://prometheusserver.marathon.l4lb.thisdcos.directory:9090/"
+      },
+      "labels": {
+        "HAPROXY_0_VHOST": "mondash.example.com",
+        "HAPROXY_GROUP": "external"
       },
       "container": {
         "type": "DOCKER",
