@@ -10,6 +10,8 @@ $ dcos marathon group add https://raw.githubusercontent.com/lloesche/prometheus-
 $ dcos marathon app update /prometheus/node-exporter instances=7000 # however many agents you have in your cluster
 ```
 
+*Important:* Once the apps are deployed make sure to update all Environment Variables with something useful. Alternatively download group.json and modify them directly before deploying to DC/OS.
+
 ## Why file_sd based discovery?
 Prometheus supports DNS based service discovery. Given a Mesos-DNS SRV record like `_node-exporter.prometheus._tcp.marathon.mesos` it will find the list of node_exporter nodes and poll them. However it'll result in instance names like
 ```
