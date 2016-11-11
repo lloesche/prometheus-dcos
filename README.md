@@ -48,7 +48,7 @@ node-exporter.prometheus-1e1ow-s2.marathon.mesos:31798
 ```
 which is not very useful. Also the Mesos scheduler will assign a random port resource.
 
-So after a [discussion on the mailing list](https://groups.google.com/forum/#!topic/prometheus-developers/ydww-vzG0IE) it turned out that Prometheus can't relabel the instance with the node's IP address since name resolution happens after relabeling. It was suggested to use the file_sd based discovery method instead. This is what the `srv-lookup` helper is for. It performs the same SRV and A record lookup and instead of the hostname writes the node's IP addres into the targets file. There's also relabeling taking place to replace the random port number with the node_exporter standard port 9100 so that when a node_exporter is restarted on a different port it's data is still associated with the same node.
+So after a [discussion on the mailing list](https://groups.google.com/forum/#!topic/prometheus-developers/ydww-vzG0IE) it turned out that Prometheus can't relabel the instance with the node's IP address since name resolution happens after relabeling. It was suggested to use the file_sd based discovery method instead. This is what the `srv2file_sd` helper is for. It performs the same SRV and A record lookup and instead of the hostname writes the node's IP addres into the targets file. There's also relabeling taking place to replace the random port number with the node_exporter standard port 9100 so that when a node_exporter is restarted on a different port it's data is still associated with the same node.
 
 ## Environment Variables
 | Variable | Function | Example |
