@@ -66,7 +66,7 @@ So after a [discussion on the mailing list](https://groups.google.com/forum/#!to
 |`SMTP_PASSWORD` | How often should we update the targets JSON | `SMTP_PASSWORD=23iuhf23few`|
 
 ## Building the SRV lookup helper
-To run the srv-lookup helper tool inside the minimal prom/prometheus Docker container I statically linked it. To do so yourself install [musl libc](http://www.musl-libc.org/) and compile using:
+To run the `srv2file_sd` helper tool inside the minimal prom/prometheus Docker container I statically linked it. To do so yourself install [musl libc](http://www.musl-libc.org/) and compile using:
 ```
 $ CC=/usr/local/musl/bin/musl-gcc go build --ldflags '-linkmode external -extldflags "-static"' srv2file_sd.go
 ```
