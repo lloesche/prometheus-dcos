@@ -18,5 +18,9 @@
       "portIndex": 0,
       "protocol": "HTTP"
     }
+  ],
+  "acceptedResourceRoles": [
+    "*",
+    "slave_public"
   ]
 }
