@@ -30,11 +30,14 @@ When working with the `group.json` you'll want to adjust the following variables
 |`/prometheus/server` | `SMTP_PASSWORD` | SMTP Server Password|
 |`/prometheus/auth-proxy` | `LOGIN` | Login Users have to provide when accessing Prometheus Server|
 |`/prometheus/auth-proxy` | `PASSWORD` | Password Users have to provide when accessing Prometheus Server ([following this scheme](http://nginx.org/en/docs/http/ngx_http_auth_basic_module.html#auth_basic_user_file))|
+|`/prometheus/grafana` | `GF_SERVER_ROOT_URL` | The complete URL Grafana will be reachable under |
+|`/prometheus/grafana` | `GF_SECURITY_ADMIN_USER` | Grafana Admin Login|
+|`/prometheus/grafana` | `GF_SECURITY_ADMIN_PASSWORD` | Grafana Admin Password|
 
 | App | Label | Value |
 |----------|----------|-------|
 |`/prometheus/auth-proxy` | `HAPROXY_0_VHOST` | Hostname Prometheus Server should be reachable under. This is what's contained in `EXTERNAL_URI`|
-|`/prometheus/grafana` | `HAPROXY_0_VHOST` | Hostname Grafana should be reachable under|
+|`/prometheus/grafana` | `HAPROXY_0_VHOST` | Hostname Grafana should be reachable under. This is what's contained in `GF_SERVER_ROOT_URL` |
 
 ## Connections
 ![Connections](https://raw.githubusercontent.com/lloesche/prometheus-dcos/master/misc/prometheus-dcos.png "Connections")
