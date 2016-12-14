@@ -23,3 +23,14 @@ scrape_configs:
       target_label: 'instance'
       regex: '(.*):.*'
       replacement: '${1}:9100'
+  - job_name: cadvisor
+    file_sd_configs:
+    - files: ['/etc/prometheus/cadvisor.json']
+    relabel_configs:
+    - source_labels: ['__address__']
+      target_label: 'host'
+      regex: '(.*):.*'
+    - source_labels: ['__address__']
+      target_label: 'instance'
+      regex: '(.*):.*'
+      replacement: '${1}:8080'

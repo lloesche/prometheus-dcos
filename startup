@@ -6,16 +6,22 @@ STORAGE_LOCAL_PATH=/prometheus
 mkdir -p $STORAGE_LOCAL_PATH/server $STORAGE_LOCAL_PATH/alertmanager
 
 /bin/sed \
-    -e "s/@SMTP_SMARTHOST@/$SMTP_SMARTHOST/" \
-    -e "s/@SMTP_FROM@/$SMTP_FROM/" \
-    -e "s/@SMTP_LOGIN@/$SMTP_LOGIN/" \
-    -e "s/@SMTP_PASSWORD@/$SMTP_PASSWORD/" \
-    -e "s/@SMTP_TO@/$SMTP_TO/" \
-    -e "s/@PAGERDUTY_HIGH_PRIORITY_KEY@/$PAGERDUTY_HIGH_PRIORITY_KEY/" \
-    -e "s/@PAGERDUTY_LOW_PRIORITY_KEY@/$PAGERDUTY_LOW_PRIORITY_KEY/" \
-    /etc/prometheus/alertmanager.yml.tmpl > /etc/prometheus/alertmanager.yml
+  -e "s/@SMTP_SMARTHOST@/$SMTP_SMARTHOST/" \
+  -e "s/@SMTP_FROM@/$SMTP_FROM/" \
+  -e "s/@SMTP_LOGIN@/$SMTP_LOGIN/" \
+  -e "s/@SMTP_PASSWORD@/$SMTP_PASSWORD/" \
+  -e "s/@SMTP_TO@/$SMTP_TO/" \
+  -e "s/@PAGERDUTY_HIGH_PRIORITY_KEY@/$PAGERDUTY_HIGH_PRIORITY_KEY/" \
+  -e "s/@PAGERDUTY_LOW_PRIORITY_KEY@/$PAGERDUTY_LOW_PRIORITY_KEY/" \
+  /etc/prometheus/alertmanager.yml.tmpl > /etc/prometheus/alertmanager.yml
 
-/bin/srv2file_sd -srv "$NODE_EXPORTER_SRV" -out "/etc/prometheus/node_exporter.json" -loop -time ${SRV_REFRESH_INTERVAL:-60} &
+if [ -n "${NODE_EXPORTER_SRV-}" ]; then
+  /bin/srv2file_sd -srv "$NODE_EXPORTER_SRV" -out "/etc/prometheus/node_exporter.json" -loop -time ${SRV_REFRESH_INTERVAL:-60} &
+fi
+if [ -n "${CADVISOR_SRV-}" ]; then
+  /bin/srv2file_sd -srv "$CADVISOR_SRV" -out "/etc/prometheus/cadvisor.json" -loop -time ${SRV_REFRESH_INTERVAL:-60} &
+fi
+
 /bin/alertmanager -config.file "/etc/prometheus/alertmanager.yml" \
                   -storage.path "$STORAGE_LOCAL_PATH/alertmanager" &
 /bin/prometheus \

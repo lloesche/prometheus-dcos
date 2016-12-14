@@ -54,6 +54,7 @@ So after a [discussion on the mailing list](https://groups.google.com/forum/#!to
 | Variable | Function | Example |
 |----------|----------|-------|
 |`NODE_EXPORTER_SRV` | Mesos-DNS SRV record of the node_exporter | `NODE_EXPORTER_SRV=_node-exporter.prometheus._tcp.marathon.mesos`|
+|`CADVISOR_SRV` | Mesos-DNS SRV record of cadvisor | `CADVISOR_SRV=_cadvisor.prometheus._tcp.marathon.mesos`|
 |`SRV_REFRESH_INTERVAL` (optional) | How often should we update the targets JSON | `SRV_REFRESH_INTERVAL=60`|
 |`ALERT_MANAGER_URI` (optional) | AlertManager URL - uses buildin AlertManager if not defined | `ALERT_MANAGER_URI=http://prometheusalertmanager.marathon.l4lb.thisdcos.directory:9093`|
 |`PAGERDUTY_HIGH_PRIORITY_KEY` | Pagerduty High Priority API Key for Alertmanager | `PAGERDUTY_HIGH_PRIORITY_KEY=93dsqkj23gfTD_nFbdwqk` |

@@ -12,6 +12,7 @@
       "env": {
         "EXTERNAL_URI": "https://monitoring.example.com/",
         "NODE_EXPORTER_SRV": "_node-exporter.prometheus._tcp.marathon.mesos",
+        "CADVISOR_SRV": "_cadvisor.prometheus._tcp.marathon.mesos",
         "PAGERDUTY_HIGH_PRIORITY_KEY": "d230f2398hf293h2304f304j343f0j34",
         "PAGERDUTY_LOW_PRIORITY_KEY": "d2302n3f4f4h39230f239f03g30jf24f",
         "SMTP_FROM": "noreply@example.com",
@@ -90,6 +91,72 @@
           "portIndex": 0,
           "protocol": "HTTP"
         }
+      ],
+      "acceptedResourceRoles": [
+        "*",
+        "slave_public"
+      ]
+    },
+    {
+      "id": "/prometheus/cadvisor",
+      "instances": 1,
+      "cpus": 0.04,
+      "mem": 128,
+      "constraints": [
+        [
+          "hostname",
+          "UNIQUE"
+        ]
+      ],
+      "container": {
+        "docker": {
+          "image": "google/cadvisor",
+          "portMappings": [
+            {
+              "containerPort": 8080,
+              "protocol": "tcp"
+            }
+          ],
+          "network": "BRIDGE"
+        },
+        "type": "DOCKER",
+        "volumes": [
+          {
+            "containerPath": "/rootfs",
+            "hostPath": "/",
+            "mode": "RO"
+          },
+          {
+            "containerPath": "/var/run",
+            "hostPath": "/var/run",
+            "mode": "RW"
+          },
+          {
+            "containerPath": "/sys",
+            "hostPath": "/sys",
+            "mode": "RO"
+          },
+          {
+            "containerPath": "/var/lib/docker",
+            "hostPath": "/var/lib/docker",
+            "mode": "RO"
+          }
+        ]
+      },
+      "healthChecks": [
+        {
+          "protocol": "HTTP",
+          "path": "/metrics",
+          "gracePeriodSeconds": 300,
+          "intervalSeconds": 60,
+          "timeoutSeconds": 20,
+          "maxConsecutiveFailures": 3,
+          "ignoreHttp1xx": false
+        }
+      ],
+      "acceptedResourceRoles": [
+        "*",
+        "slave_public"
       ]
     },
     {
