@@ -1,0 +1,61 @@
+#!/bin/sh
+set -o errexit -o nounset -o pipefail
+
+if [ -z "${SMTP_TO-}" ]; then
+	echo "SMTP_TO recipient required"
+	exit 1
+fi
+
+alertmanager_cfg="$1"
+
+cat > "$alertmanager_cfg" << EOF
+global:
+  smtp_smarthost: '${SMTP_SMARTHOST:-localhost:25}'
+  smtp_from: '${SMTP_FROM:-noreply@example.com}'
+EOF
+if [ -n "${SMTP_LOGIN-}" -a -n "${SMTP_PASSWORD-}" ]; then
+cat >> "$alertmanager_cfg" << EOF
+  smtp_auth_username: '$SMTP_LOGIN'
+  smtp_auth_password: '$SMTP_PASSWORD'
+EOF
+fi
+
+cat >> "$alertmanager_cfg" << EOF
+
+route:
+ group_by: [cluster]
+ group_wait: 30s
+ group_interval: 5m
+ repeat_interval: 3h
+ receiver: email
+EOF
+
+routes=''
+receivers=''
+for pd_key in $(env | grep -e '^PAGERDUTY_[A-Za-z0-9_]\+_KEY')
+do
+	key=$(echo $pd_key | cut -d = -f 1 | tr A-Z a-z)
+	value=$(echo $pd_key | cut -d = -f 2-)  # BusyBox's ash doesn't know about ${!key} or arrays
+	key=${key:10}; key=${key%_key}; key=${key//_/-}
+  if [ -z "$routes" ]; then
+    routes=" routes:\n"
+  fi
+  echo "Adding PagerDuty Service $key"
+	routes="$routes  - match:\n      severity: $key\n    receiver: pagerduty-$key\n"
+  receivers="$receivers- name: pagerduty-$key\n  pagerduty_configs:\n  - service_key: '$value'\n"
+done
+
+if [ -n "$routes" ]; then
+  echo -ne "$routes" >> "$alertmanager_cfg"
+fi
+
+cat >> "$alertmanager_cfg" << EOF
+
+receivers:
+- name: email
+  email_configs:
+  - to: '$SMTP_TO'
+EOF
+if [ -n "$receivers" ]; then
+  echo -ne "$receivers" >> "$alertmanager_cfg"
+fi

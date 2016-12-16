@@ -3,7 +3,7 @@
 ## Intro
 This runs Prometheus on DC/OS (1.8+). `server.json` contains the service definition for Prometheus itself. `node_exporter.json` contains the service definition for node_exporter. I'm running node_exporter inside a Mesos (cgroups) container so that it sees all of the hosts filesystems without any need for priviliges or translation.
 
-To make life easier I also created a `group.json` that includes the Prometheus Server, Node Exporter, [Grafana Dashboard](https://github.com/lloesche/prometheus-grafana-dcos) and an [authentication proxy](https://github.com/lloesche/auth-proxy-dcos) which will add Basic Auth to the Server's WebUI. The group assumes you're running [Marathon-LB](https://github.com/mesosphere/marathon-lb) on your DC/OS and exports Marathon-LB labels.
+To make life easier I also created a `group.json` that includes the Prometheus Server, Node Exporter, [cAdvisor](https://github.com/google/cadvisor), [Grafana Dashboard](https://github.com/lloesche/prometheus-grafana-dcos) and an [authentication proxy](https://github.com/lloesche/auth-proxy-dcos) which will add Basic Auth to the Server's WebUI. The group assumes you're running [Marathon-LB](https://github.com/mesosphere/marathon-lb) on your DC/OS and exports Marathon-LB labels.
 
 To get started just install the group as shown below.
 
@@ -60,14 +60,19 @@ So after a [discussion on the mailing list](https://groups.google.com/forum/#!to
 |`CADVISOR_SRV` | Mesos-DNS SRV record of cadvisor | `CADVISOR_SRV=_cadvisor.prometheus._tcp.marathon.mesos`|
 |`SRV_REFRESH_INTERVAL` (optional) | How often should we update the targets JSON | `SRV_REFRESH_INTERVAL=60`|
 |`ALERT_MANAGER_URI` (optional) | AlertManager URL - uses buildin AlertManager if not defined | `ALERT_MANAGER_URI=http://prometheusalertmanager.marathon.l4lb.thisdcos.directory:9093`|
-|`PAGERDUTY_HIGH_PRIORITY_KEY` | Pagerduty High Priority API Key for Alertmanager | `PAGERDUTY_HIGH_PRIORITY_KEY=93dsqkj23gfTD_nFbdwqk` |
-|`PAGERDUTY_LOW_PRIORITY_KEY` | Pagerduty Low Priority API Key for Alertmanager | `PAGERDUTY_LOW_PRIORITY_KEY=23d3NI3ff23f23bffojgf` |
+|`PAGERDUTY_*_KEY` | Pagerduty API Key for Alertmanager. Name in * will be made into the severity | `PAGERDUTY_HIGH_PRIORITY_KEY=93dsqkj23gfTD_nFbdwqk` |
+|`RULES` (optional) | prometheus.rules, replaces the version that ships with the container image | `RULES=... Entire prometheus.rules file content`|
 |`EXTERNAL_URI` (optional) | External WebUI URL | `EXTERNAL_URI=http://prometheusserver.marathon.l4lb.thisdcos.directory:9090`|
 |`SMTP_FROM` | How often should we update the targets JSON | `SMTP_FROM=alertmanager@example.com`|
 |`SMTP_TO` | How often should we update the targets JSON | `SMTP_TO=ops@example.com`|
 |`SMTP_SMARTHOST` | How often should we update the targets JSON | `SMTP_SMARTHOST=mail.example.com`|
 |`SMTP_LOGIN` | How often should we update the targets JSON | `SMTP_LOGIN=prometheus`|
 |`SMTP_PASSWORD` | How often should we update the targets JSON | `SMTP_PASSWORD=23iuhf23few`|
+
+To produce the $RULES env variable it can be handy to use something like
+```
+$ cat prometheus.rules | sed -e ':a' -e 'N' -e '$!ba' -e 's/\n/\\n/g'
+```
 
 ## Building the SRV lookup helper
 To run the `srv2file_sd` helper tool inside the minimal prom/prometheus Docker container I statically linked it. To do so yourself install [musl libc](http://www.musl-libc.org/) and compile using:

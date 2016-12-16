@@ -1,7 +1,7 @@
 ALERT InstanceDown
   IF up == 0
   FOR 5m
-  LABELS { severity = "page-high" }
+  LABELS { severity = "high-priority" }
   ANNOTATIONS {
     summary = "Instance {{ $labels.host }} down",
     description = "{{ $labels.host }} of job {{ $labels.job }} has been down for more than 5 minutes.",
@@ -9,7 +9,7 @@ ALERT InstanceDown
 ALERT InstanceLowDisk
   IF 100 - (node_filesystem_avail{device=~"/.*", mountpoint!~"/var/lib/mesos/slave/.*"} / node_filesystem_size * 100) > 90
   FOR 5m
-  LABELS { severity = "page-high" }
+  LABELS { severity = "high-priority" }
   ANNOTATIONS {
     summary = "Instance {{$labels.host}}: low disk space",
     description = "{{$labels.host}} has less than 10% free disk space",
@@ -17,7 +17,7 @@ ALERT InstanceLowDisk
 ALERT InstanceHighCpu
   IF 100 - (avg by (instance) (irate(node_cpu{job="node",mode="idle"}[5m])) * 100) > 99
   FOR 360m
-  LABELS { severity = "page-low" }
+  LABELS { severity = "low-priority" }
   ANNOTATIONS {
     summary = "Instance {{$labels.host}}: CPU high",
     description = "{{$labels.host}} has high CPU activity"
@@ -25,7 +25,7 @@ ALERT InstanceHighCpu
 ALERT InstanceLowMemory
   IF node_memory_MemAvailable < 268435456
   FOR 10m
-  LABELS { severity = "page-low" }
+  LABELS { severity = "low-priority" }
   ANNOTATIONS {
     summary = "Instance {{$labels.host}}: memory low",
     description = "{{$labels.host}} has less than 256M memory available"

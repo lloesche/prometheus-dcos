@@ -1,19 +1,16 @@
 #!/bin/sh
-set -o nounset
+set -o errexit -o nounset -o pipefail
 
 STORAGE_LOCAL_PATH=/prometheus
 [ -d /mnt/mesos/sandbox/prometheus ] && STORAGE_LOCAL_PATH=/mnt/mesos/sandbox/prometheus
 mkdir -p $STORAGE_LOCAL_PATH/server $STORAGE_LOCAL_PATH/alertmanager
 
-/bin/sed \
-  -e "s/@SMTP_SMARTHOST@/$SMTP_SMARTHOST/" \
-  -e "s/@SMTP_FROM@/$SMTP_FROM/" \
-  -e "s/@SMTP_LOGIN@/$SMTP_LOGIN/" \
-  -e "s/@SMTP_PASSWORD@/$SMTP_PASSWORD/" \
-  -e "s/@SMTP_TO@/$SMTP_TO/" \
-  -e "s/@PAGERDUTY_HIGH_PRIORITY_KEY@/$PAGERDUTY_HIGH_PRIORITY_KEY/" \
-  -e "s/@PAGERDUTY_LOW_PRIORITY_KEY@/$PAGERDUTY_LOW_PRIORITY_KEY/" \
-  /etc/prometheus/alertmanager.yml.tmpl > /etc/prometheus/alertmanager.yml
+/bin/mkalertmanagercfg "/etc/prometheus/alertmanager.yml"
+
+if [ -n "${RULES-}" ]; then
+  echo "Writing ENV set RULES to /etc/prometheus/prometheus.rules"
+  echo -e "$RULES" > /etc/prometheus/prometheus.rules
+fi
 
 if [ -n "${NODE_EXPORTER_SRV-}" ]; then
   /bin/srv2file_sd -srv "$NODE_EXPORTER_SRV" -out "/etc/prometheus/node_exporter.json" -loop -time ${SRV_REFRESH_INTERVAL:-60} &
