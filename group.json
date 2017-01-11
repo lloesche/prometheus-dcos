@@ -59,7 +59,7 @@
       },
       "healthChecks": [
         {
-          "path": "/metrics",
+          "path": "/api/v1/query?query=prometheus_build_info",
           "portIndex": 0,
           "protocol": "HTTP"
         }
