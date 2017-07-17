@@ -5,7 +5,7 @@
       "id": "/prometheus/server",
       "instances": 1,
       "cpus": 0.5,
-      "mem": 2048,
+      "mem": 4096,
       "ports": [
         0
       ],
