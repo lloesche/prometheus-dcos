@@ -12,8 +12,6 @@ import (
 	"time"
 )
 
-const debug = true
-
 func main() {
 	hostname := flag.String("srv", "", "Hostname that points to a srv record")
 	outfile := flag.String("out", "", "Path to JSON file to write")
