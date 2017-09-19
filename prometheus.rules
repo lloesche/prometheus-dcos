@@ -1,32 +1,38 @@
-ALERT InstanceDown
-  IF up == 0
-  FOR 5m
-  LABELS { severity = "high-priority" }
-  ANNOTATIONS {
-    summary = "Instance {{ $labels.host }} down",
-    description = "{{ $labels.host }} of job {{ $labels.job }} has been down for more than 5 minutes.",
-  }
-ALERT InstanceLowDisk
-  IF 100 - (node_filesystem_avail{device=~"/.*", mountpoint!~"/var/lib/mesos/slave/.*"} / node_filesystem_size * 100) > 90
-  FOR 5m
-  LABELS { severity = "high-priority" }
-  ANNOTATIONS {
-    summary = "Instance {{$labels.host}}: low disk space",
-    description = "{{$labels.host}} has less than 10% free disk space",
-  }
-ALERT InstanceHighCpu
-  IF 100 - (avg by (instance) (irate(node_cpu{job="node",mode="idle"}[5m])) * 100) > 99
-  FOR 360m
-  LABELS { severity = "low-priority" }
-  ANNOTATIONS {
-    summary = "Instance {{$labels.host}}: CPU high",
-    description = "{{$labels.host}} has high CPU activity"
-  }
-ALERT InstanceLowMemory
-  IF node_memory_MemAvailable < 268435456
-  FOR 10m
-  LABELS { severity = "low-priority" }
-  ANNOTATIONS {
-    summary = "Instance {{$labels.host}}: memory low",
-    description = "{{$labels.host}} has less than 256M memory available"
-  }
+groups:
+- name: prometheus.rules
+  rules:
+  - alert: InstanceDown
+    expr: up == 0
+    for: 5m
+    labels:
+      severity: high-priority
+    annotations:
+      description: '{{ $labels.host }} of job {{ $labels.job }} has been down for
+        more than 5 minutes.'
+      summary: Instance {{ $labels.host }} down
+  - alert: InstanceLowDisk
+    expr: 100 - (node_filesystem_avail{device=~"^(?:/.*)$",mountpoint!~"^(?:/var/lib/mesos/slave/.*)$"}
+      / node_filesystem_size * 100) > 90
+    for: 5m
+    labels:
+      severity: high-priority
+    annotations:
+      description: '{{$labels.host}} has less than 10% free disk space'
+      summary: 'Instance {{$labels.host}}: low disk space'
+  - alert: InstanceHighCpu
+    expr: 100 - (avg(irate(node_cpu{job="node",mode="idle"}[5m])) BY (instance) *
+      100) > 99
+    for: 6h
+    labels:
+      severity: low-priority
+    annotations:
+      description: '{{$labels.host}} has high CPU activity'
+      summary: 'Instance {{$labels.host}}: CPU high'
+  - alert: InstanceLowMemory
+    expr: node_memory_MemAvailable < 268435456
+    for: 10m
+    labels:
+      severity: low-priority
+    annotations:
+      description: '{{$labels.host}} has less than 256M memory available'
+      summary: 'Instance {{$labels.host}}: memory low'

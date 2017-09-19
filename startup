@@ -1,9 +1,10 @@
 #!/bin/sh
 set -o errexit -o nounset -o pipefail
 
-STORAGE_LOCAL_PATH=/prometheus
-[ -d /mnt/mesos/sandbox/prometheus ] && STORAGE_LOCAL_PATH=/mnt/mesos/sandbox/prometheus
-mkdir -p $STORAGE_LOCAL_PATH/server $STORAGE_LOCAL_PATH/alertmanager
+STORAGE_PATH=/prometheus
+[ -d /mnt/mesos/sandbox/prometheus ] && STORAGE_PATH=/mnt/mesos/sandbox/prometheus
+mkdir -p $STORAGE_PATH/server $STORAGE_PATH/alertmanager
+rm -f $STORAGE_PATH/server/lock
 
 /bin/mkalertmanagercfg "/etc/prometheus/alertmanager.yml"
 
@@ -20,12 +21,18 @@ if [ -n "${CADVISOR_SRV-}" ]; then
 fi
 
 /bin/alertmanager -config.file "/etc/prometheus/alertmanager.yml" \
-                  -storage.path "$STORAGE_LOCAL_PATH/alertmanager" &
+                  -storage.path "$STORAGE_PATH/alertmanager" &
+
+/bin/sed -i'' \
+  -e "s#@ALERTMANAGER_SCHEME@#${ALERTMANAGER_SCHEME:-http}#" \
+  -e "s#@ALERTMANAGER_URL@#${ALERTMANAGER_URL:-localhost:9093}#" \
+  /etc/prometheus/prometheus.yml
+
 /bin/prometheus \
-  -config.file /etc/prometheus/prometheus.yml \
-  -storage.local.path $STORAGE_LOCAL_PATH/server \
-  -web.console.libraries /etc/prometheus/console_libraries \
-  -web.console.templates /etc/prometheus/consoles \
-  -web.external-url "${EXTERNAL_URI:-http://prometheusserver.marathon.l4lb.thisdcos.directory:9090}" \
-  -alertmanager.url "${ALERT_MANAGER_URI:-http://localhost:9093}" \
+  --config.file=/etc/prometheus/prometheus.yml \
+  --storage.tsdb.path=$STORAGE_PATH/server \
+  --storage.tsdb.retention="${STORAGE_TSDB_RETENTION:-7d}" \
+  --web.console.libraries=/etc/prometheus/console_libraries \
+  --web.console.templates=/etc/prometheus/consoles \
+  --web.external-url="${EXTERNAL_URI:-http://prometheusserver.marathon.l4lb.thisdcos.directory:9090}" \
   "$@"

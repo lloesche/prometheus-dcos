@@ -34,3 +34,10 @@ scrape_configs:
       target_label: 'instance'
       regex: '(.*):.*'
       replacement: '${1}:8080'
+
+alerting:
+  alertmanagers:
+  - scheme: @ALERTMANAGER_SCHEME@
+    static_configs:
+    - targets:
+      - "@ALERTMANAGER_URL@"

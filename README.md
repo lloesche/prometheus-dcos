@@ -59,10 +59,12 @@ So after a [discussion on the mailing list](https://groups.google.com/forum/#!to
 |`NODE_EXPORTER_SRV` | Mesos-DNS SRV record of the node_exporter | `NODE_EXPORTER_SRV=_node-exporter.prometheus._tcp.marathon.mesos`|
 |`CADVISOR_SRV` | Mesos-DNS SRV record of cadvisor | `CADVISOR_SRV=_cadvisor.prometheus._tcp.marathon.mesos`|
 |`SRV_REFRESH_INTERVAL` (optional) | How often should we update the targets JSON | `SRV_REFRESH_INTERVAL=60`|
-|`ALERT_MANAGER_URI` (optional) | AlertManager URL - uses buildin AlertManager if not defined | `ALERT_MANAGER_URI=http://prometheusalertmanager.marathon.l4lb.thisdcos.directory:9093`|
-|`PAGERDUTY_*_KEY` | Pagerduty API Key for Alertmanager. Name in * will be made into the severity | `PAGERDUTY_HIGH_PRIORITY_KEY=93dsqkj23gfTD_nFbdwqk` |
+|`ALERTMANAGER_URL` (optional) | AlertManager URL - uses buildin AlertManager if not defined | `ALERTMANAGER_URL=prometheusalertmanager.marathon.l4lb.thisdcos.directory:9093`|
+|`ALERTMANAGER_SCHEME` (optional) | AlertManager Scheme - uses http if not defined | `ALERTMANAGER_SCHEME=https`|
+|`PAGERDUTY_*_KEY` (optional) | Pagerduty API Key for Alertmanager. Name in * will be made into the severity | `PAGERDUTY_HIGH_PRIORITY_KEY=93dsqkj23gfTD_nFbdwqk` |
 |`RULES` (optional) | prometheus.rules, replaces the version that ships with the container image | `RULES=... Entire prometheus.rules file content`|
 |`EXTERNAL_URI` (optional) | External WebUI URL | `EXTERNAL_URI=http://prometheusserver.marathon.l4lb.thisdcos.directory:9090`|
+|`STORAGE_TSDB_RETENTION` (optional) | Storage TSDB Retention \ `STORAGE_TSDB_RETENTION=7d`|
 |`SMTP_FROM` | How often should we update the targets JSON | `SMTP_FROM=alertmanager@example.com`|
 |`SMTP_TO` | How often should we update the targets JSON | `SMTP_TO=ops@example.com`|
 |`SMTP_SMARTHOST` | How often should we update the targets JSON | `SMTP_SMARTHOST=mail.example.com`|
