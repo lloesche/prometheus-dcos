@@ -1,11 +1,11 @@
 {
   "id": "/prometheus/server",
   "instances": 1,
-  "cpus": 0.5,
+  "cpus": 1,
   "mem": 4096,
   "ports": [0],
   "env": {
-    "EXTERNAL_URI": "https://monitoring.example.com/",
+    "EXTERNAL_URI": "https://prometheus-server.example.com/",
     "NODE_EXPORTER_SRV": "_node-exporter.prometheus._tcp.marathon.mesos",
     "CADVISOR_SRV": "_cadvisor.prometheus._tcp.marathon.mesos",
     "PAGERDUTY_HIGH_PRIORITY_KEY": "d230f2398hf293h2304f304j343f0j34",
@@ -22,7 +22,7 @@
       {
         "containerPath": "prometheus",
         "persistent": {
-          "size": 1024
+          "size": 10240
         },
         "mode": "RW"
       }
@@ -51,6 +51,11 @@
   },
   "residency": {
     "taskLostBehavior": "WAIT_FOREVER"
+  },
+  "labels": {
+    "HAPROXY_0_VHOST": "prometheus-server.example.com",
+    "HAPROXY_1_VHOST": "prometheus-alertmanager.example.com",
+    "HAPROXY_GROUP": "external"
   },
   "healthChecks": [
     {

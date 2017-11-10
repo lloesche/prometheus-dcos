@@ -4,13 +4,13 @@
     {
       "id": "/prometheus/server",
       "instances": 1,
-      "cpus": 0.5,
+      "cpus": 1,
       "mem": 4096,
       "ports": [
         0
       ],
       "env": {
-        "EXTERNAL_URI": "https://monitoring.example.com/",
+        "EXTERNAL_URI": "https://prometheus-server.example.com/",
         "NODE_EXPORTER_SRV": "_node-exporter.prometheus._tcp.marathon.mesos",
         "CADVISOR_SRV": "_cadvisor.prometheus._tcp.marathon.mesos",
         "PAGERDUTY_HIGH_PRIORITY_KEY": "d230f2398hf293h2304f304j343f0j34",
@@ -21,13 +21,22 @@
         "SMTP_LOGIN": "someuser",
         "SMTP_PASSWORD": "somepassword"
       },
+      "labels": {
+        "HAPROXY_0_VHOST": "prometheus-server.example.com",
+        "HAPROXY_0_REDIRECT_TO_HTTPS": "true",
+        "HAPROXY_0_AUTH": "Prometheus:monitoring:$1$/YEoV5dv$1j3BbCu7j4D29RpBCUXmM/",
+        "HAPROXY_1_VHOST": "prometheus-alertmanager.example.com",
+        "HAPROXY_1_REDIRECT_TO_HTTPS": "true",
+        "HAPROXY_1_AUTH": "Prometheus:monitoring:$1$/YEoV5dv$1j3BbCu7j4D29RpBCUXmM/",
+        "HAPROXY_GROUP": "external"
+      },
       "container": {
         "type": "DOCKER",
         "volumes": [
           {
             "containerPath": "prometheus",
             "persistent": {
-              "size": 4096
+              "size": 10240
             },
             "mode": "RW"
           }
@@ -75,10 +84,10 @@
       ],
       "fetch": [
         {
-          "uri": "https://github.com/prometheus/node_exporter/releases/download/0.12.0/node_exporter-0.12.0.linux-amd64.tar.gz"
+          "uri": "https://github.com/prometheus/node_exporter/releases/download/v0.15.1/node_exporter-0.15.1.linux-amd64.tar.gz"
         }
       ],
-      "cmd": "node_exporter-0.12.0.linux-amd64/node_exporter -web.listen-address :$PORT",
+      "cmd": "node_exporter-0.15.1.linux-amd64/node_exporter --collector.systemd --collector.interrupts --collector.nfs --web.listen-address :$PORT",
       "constraints": [
         [
           "hostname",
@@ -92,6 +101,10 @@
           "protocol": "HTTP"
         }
       ],
+      "upgradeStrategy": {
+        "minimumHealthCapacity": 0.5,
+        "maximumOverCapacity": 0
+      },
       "acceptedResourceRoles": [
         "*",
         "slave_public"
@@ -154,51 +167,14 @@
           "ignoreHttp1xx": false
         }
       ],
+      "upgradeStrategy": {
+        "minimumHealthCapacity": 0.5,
+        "maximumOverCapacity": 0
+      },
       "acceptedResourceRoles": [
         "*",
         "slave_public"
       ]
-    },
-    {
-      "id": "/prometheus/auth-proxy",
-      "cpus": 0.01,
-      "mem": 256,
-      "disk": 0,
-      "instances": 1,
-      "container": {
-        "type": "DOCKER",
-        "volumes": [],
-        "docker": {
-          "image": "lloesche/auth-proxy-dcos",
-          "network": "BRIDGE",
-          "portMappings": [
-            {
-              "containerPort": 80,
-              "hostPort": 0,
-              "protocol": "tcp"
-            }
-          ],
-          "privileged": false,
-          "forcePullImage": true
-        }
-      },
-      "healthChecks": [
-        {
-          "path": "/auth-proxy-health-check",
-          "protocol": "HTTP",
-          "portIndex": 0
-        }
-      ],
-      "labels": {
-        "HAPROXY_0_VHOST": "mon.example.com",
-        "HAPROXY_GROUP": "external"
-      },
-      "env": {
-        "LOGIN": "monitoring",
-        "PASSWORD": "{PLAIN}changeme",
-        "LOCATION": "/",
-        "PROXY_PASS": "http://prometheusserver.marathon.l4lb.thisdcos.directory:9090/"
-      }
     },
     {
       "id": "/prometheus/grafana",
@@ -210,13 +186,14 @@
       ],
       "env": {
         "GF_PATHS_DATA": "/mnt/mesos/sandbox/grafana",
-        "GF_SERVER_ROOT_URL": "https://mondash.example.com",
+        "GF_SERVER_ROOT_URL": "https://prometheus-dashboard.example.com",
         "GF_SECURITY_ADMIN_USER": "someadmin",
         "GF_SECURITY_ADMIN_PASSWORD": "somepassword",
         "PROMETHEUS_URI": "http://prometheusserver.marathon.l4lb.thisdcos.directory:9090/"
       },
       "labels": {
-        "HAPROXY_0_VHOST": "mondash.example.com",
+        "HAPROXY_0_VHOST": "prometheus-dashboard.example.com",
+        "HAPROXY_0_REDIRECT_TO_HTTPS": "true",
         "HAPROXY_GROUP": "external"
       },
       "container": {
