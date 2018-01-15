@@ -1,70 +1,73 @@
 package main
 
 import (
-	"flag"
-	"fmt"
-	"log"
-	"os"
-	"net"
-	"strconv"
 	"encoding/json"
+	"flag"
 	"io/ioutil"
+	"log"
+	"net/http"
+	"os"
+	"strconv"
 	"time"
 )
 
-func main() {
-	hostname := flag.String("srv", "", "Hostname that points to a srv record")
-	outfile := flag.String("out", "", "Path to JSON file to write")
-	loop := flag.Bool("loop", false, "Loop forever")
-	looptime := flag.Int("time", 300, "Time to wait between hostname resolution refresh cycles")
-	flag.Parse()
-
-	if *hostname == "" || *outfile == "" {
-		flag.PrintDefaults()
-		os.Exit(1)
-	}
-	if *loop {
-		for {
-			generate(*hostname, *outfile)
-			time.Sleep(time.Duration(*looptime) * time.Second)
-		}
-	} else {
-		generate(*hostname, *outfile)
-	}
-
+type tasks struct {
+	Tasks []task `json:"tasks"`
 }
 
-func generate(hostname string, outfile string) {
-	targets := []string{}
-	log.Println(fmt.Sprintf("Looking up hostname %s", hostname))
+type task struct {
+	Host  string `json:"host"`
+	Ports []int  `json:"ports"`
+}
 
-	_, addrs, err := net.LookupSRV("", "", hostname)
+func extractHosts(blob []byte) (*[]string, error) {
+
+	var t tasks
+	err := json.Unmarshal(blob, &t)
+
 	if err != nil {
-		log.Println(fmt.Sprintf("Error: %s", err))
-		return
-	} else {
-		for i := 0; i < len(addrs); i++ {
-			srvaddrs, err := net.LookupHost(addrs[i].Target)
-			log.Println(fmt.Sprintf("%d Target: %s", i, addrs[i].Target))
-			log.Println(fmt.Sprintf("%d Port: %d", i, addrs[i].Port))
-			if err == nil {
-				for n := 0; n < len(srvaddrs); n++ {
-					log.Println(fmt.Sprintf("%d IP: %s", i, srvaddrs[n]))
-					targets = append(targets, srvaddrs[n]+":"+strconv.Itoa(int(addrs[i].Port)))
-				}
-			}
-		}
+		return nil, err
 	}
-	file_sd := [1]map[string][]string{}
-	file_sd[0] = map[string][]string{"targets": targets}
-	file_sd_str, _ := json.Marshal(file_sd)
 
+	result := make([]string, len(t.Tasks))
+
+	for index, task := range t.Tasks {
+		result[index] = task.Host + ":" + strconv.Itoa(task.Ports[0])
+	}
+
+	return &result, nil
+}
+
+func getTasks(url string) ([]byte, error) {
+	resp, err := http.Get(url)
+
+	if err != nil {
+		return nil, err
+	}
+
+	bodyBytes, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	return bodyBytes, nil
+}
+
+func taskToString(tasks *[]string) *[]byte {
+	fileSd := [1]map[string][]string{}
+	fileSd[0] = map[string][]string{"targets": *tasks}
+	fileSdStr, _ := json.Marshal(fileSd)
+
+	return &fileSdStr
+}
+
+func writeToFile(blob *[]byte, outfile string) {
 	file, err := ioutil.TempFile("", "file-sd")
 	if err != nil {
 		log.Println(err)
 		return
 	}
-	if _, err = file.Write([]byte(file_sd_str)); err != nil {
+	if _, err = file.Write([]byte(*blob)); err != nil {
 		log.Println(err)
 		return
 	}
@@ -83,4 +86,41 @@ func generate(hostname string, outfile string) {
 		log.Println(err)
 		return
 	}
+}
+
+func createURL(leader string, application string) string {
+	url := leader + "/service/marathon/v2/apps" + application + "/tasks"
+	return url
+}
+
+func generate(url string, outfile string) {
+	rest, _ := getTasks(url)
+	tasks, _ := extractHosts(rest)
+	blob := taskToString(tasks)
+	writeToFile(blob, outfile)
+}
+
+func main() {
+	srv := flag.String("srv", "", "service name e.g /nginx")
+	outfile := flag.String("out", "", "Path to JSON file to write")
+	loop := flag.Bool("loop", false, "Loop forever")
+	looptime := flag.Int("time", 300, "Time to wait between hostname resolution refresh cycles in seconds")
+	marathon := flag.String("marathon", "http://leader.mesos", "marathon host location")
+	flag.Parse()
+
+	if *srv == "" || *outfile == "" {
+		flag.PrintDefaults()
+		os.Exit(1)
+	}
+	url := createURL(*marathon, *srv)
+
+	if *loop {
+		for {
+			generate(url, *outfile)
+			time.Sleep(time.Duration(*looptime) * time.Second)
+		}
+	} else {
+		generate(url, *outfile)
+	}
+
 }
