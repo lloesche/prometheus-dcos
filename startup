@@ -20,8 +20,8 @@ if [ -n "${CADVISOR_SRV-}" ]; then
   /bin/srv2file_sd -srv "$CADVISOR_SRV" -out "/etc/prometheus/cadvisor.json" -loop -time ${SRV_REFRESH_INTERVAL:-60} &
 fi
 
-/bin/alertmanager -config.file "/etc/prometheus/alertmanager.yml" \
-                  -storage.path "$STORAGE_PATH/alertmanager" &
+/bin/alertmanager --config.file "/etc/prometheus/alertmanager.yml" \
+                  --storage.path "$STORAGE_PATH/alertmanager" &
 
 /bin/sed -i'' \
   -e "s#@ALERTMANAGER_SCHEME@#${ALERTMANAGER_SCHEME:-http}#" \
