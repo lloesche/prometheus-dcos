@@ -26,6 +26,7 @@ fi
 /bin/sed -i'' \
   -e "s#@ALERTMANAGER_SCHEME@#${ALERTMANAGER_SCHEME:-http}#" \
   -e "s#@ALERTMANAGER_URL@#${ALERTMANAGER_URL:-localhost:9093}#" \
+  -e "s#SCRAPE_CONFIGS#${SCRAPE_CONFIGS:-}#"
   /etc/prometheus/prometheus.yml
 
 /bin/prometheus \
